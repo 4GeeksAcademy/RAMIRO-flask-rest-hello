@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, Personas
 #from models import Person
 
 app = Flask(__name__)
@@ -36,14 +36,46 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+@app.route('/personas', methods=['GET'])
+def get_all_personas():
+    all_personas = Personas.query.all()
+    map_personas = list(map(lambda item: item.serialize(), all_personas ))
+
+    if all_personas == []:
+        return {"msg":"No hay personas creadas"}
 
     response_body = {
         "msg": "Hello, this is your GET /user response "
+        "Personas" : map_personas
     }
 
     return jsonify(response_body), 200
+
+# @app.route('/planetas', methods=['GET'])
+# def get_all_usuarios():
+#     all_planetas = Planetas.query.all()
+#     print(all_planetas)
+
+#     response_body = {
+#         "msg": "Hello, this is your GET /user response "
+#         # "Planetas" : all_planetas.serialize()
+#     }
+
+#     return jsonify(response_body), 200
+
+
+# @app.route('/vehiculos', methods=['GET'])
+# def get_all_usuarios():
+#     all_vehiculos = Vehiculos.query.all()
+#     print(all_vehiculos)
+
+#     response_body = {
+#         "msg": "Hello, this is your GET /user response "
+#         # "Vehiculos" : Vehiculos.serialize()
+#     }
+
+#     return jsonify(response_body), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
