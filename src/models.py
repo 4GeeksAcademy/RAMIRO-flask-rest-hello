@@ -27,6 +27,13 @@ class Personas(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "heigth": self.heigth,
+            "mass": self.mass,
+            "hair_color": self.hair_color,
+            "skin_color": self.skin_color,
+            "eye_color": self.eye_color,
+            "gender": self.gender,
+            "birth_year": self.birth_year,
             # do not serialize the password, its a security breach
         }
         
@@ -53,6 +60,11 @@ class Planetas(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "gravity": self.gravity,
+            "diamer": self.diamer,
+            "climate": self.climate,
+            "population": self.population,
+            "terrain": self.terrain,
             # do not serialize the password, its a security breach
         }
 
@@ -79,7 +91,11 @@ class Vehiculos(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            # do not serialize the password, its a security breach
+            "modelo": self.modelo,
+            "vehicle_class": self.vehicle_class,
+            "passamgres": self.passamgres,
+            "length": self.length,
+            "consumables": self.consumables,
         }
 
 
@@ -105,7 +121,13 @@ class Usuarios(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "nombre": self.nombre,
+            "apellido": self.nombre,
+            "nombre de usuario": self.nombre_de_usuario,
+            "email": self.emailç,
+            "edad": self.edad,
+            "DNI": self.DNI,
+            
             # do not serialize the password, its a security breach
         }
 
@@ -120,7 +142,7 @@ class Favoritos(db.Model):
     personas_id = db.Column(db.Integer, db.ForeignKey('personas.id'))
     planetas_id = db.Column(db.Integer, db.ForeignKey('planetas.id'))
     vehiculos_id = db.Column(db.Integer, db.ForeignKey('vehiculos.id'))
-    usuarios_DNI = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False )
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False )
 
     def __repr__(self):
         return '<Favoritos %r>' % self.id
@@ -128,6 +150,9 @@ class Favoritos(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name,
+            "personas_id": self.personas_id,
+            "planetas_id": self.planetas_id,
+            "vehiculos_id": self.vehiculos_id,
+            "usuario_id": self.usuario_id,
             # do not serialize the password, its a security breach
         }
