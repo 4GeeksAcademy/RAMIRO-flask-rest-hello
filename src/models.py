@@ -124,7 +124,7 @@ class Usuarios(db.Model):
             "nombre": self.nombre,
             "apellido": self.nombre,
             "nombre de usuario": self.nombre_de_usuario,
-            "email": self.emailç,
+            "email": self.email,
             "edad": self.edad,
             "DNI": self.DNI,
             

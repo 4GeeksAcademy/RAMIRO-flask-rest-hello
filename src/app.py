@@ -11,6 +11,9 @@ from admin import setup_admin
 from models import db, Personas, Planetas, Vehiculos, Usuarios, Favoritos
 #from models import Person
 
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
@@ -240,7 +243,84 @@ def delete_one_favorito():
         return(f"User with ID {user_id} not found."), 404
 
 
+
+
+# Setup the Flask-JWT-Extended extension
+# Configuracion de Flask-JWt-Extended
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
+
+
+# Create a route to authenticate your users and return JWTs. The
+# create_access_token() function is used to actually generate the JWT.
+@app.route("/signup", methods=["POST"])
+def signup():
+    username = request.json.get("nombre_de_usuario", None)
+    password = request.json.get("contraseña", None)
+    name = request.json.get("nombre", None)
+    last_name = request.json.get("apellido", None)
+    email = request.json.get("email", None)
+    edad = request.json.get("edad", None)
+    dni = request.json.get("DNI", None)
+    # response = Usuarios.query.filter_by(nombre_de_usuario = username).first()
+
+    # if response is None:
+        #     return jsonify({"msg": "Bad username or password"}), 404
+
+    # if username != "test" or password != "test":
+    #     return jsonify({"msg": "Bad username or password"}), 401
+
+    info = Usuarios(nombre=name,apellido=last_name,nombre_de_usuario=username,contraseña=password, email=email,edad=edad,DNI=dni)
+    db.session.add(info)
+    db.session.commit()
+    return jsonify(request.json)
+
+# enviar a postman en el body
+#     {
+#         "nombre"="",
+#         "apellido"= "",
+#         "nombre_de_usuario"="",
+#         "contraseña"="",
+#         "email"= "",
+#         "edad"= "",
+#         "DNI" = ""
+#     }
     
+
+# # Create a route to authenticate your users and return JWTs. The
+# # create_access_token() function is used to actually generate the JWT.
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.json.get("nombre_de_usuario", None)
+    password = request.json.get("contraseña", None)
+    response_username = Usuarios.query.filter_by(nombre_de_usuario = username).first()
+    # response_password = Usuarios.query.filter_by(contraseña = password).first().serialize()
+    # print(response_username['nombre de usuario'])
+    # print(response_password['contraseña'])
+    print(response_username.contraseña)
+    print(response_username.nombre_de_usuario)
+    print(request.json)
+
+    if username != response_username.nombre_de_usuario or password != response_username.contraseña:
+        return jsonify({"msg": "Bad username or password"}), 401
+        
+
+    
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token)
+
+
+
+
+# Protect a route with jwt_required, which will kick out requests
+# without a valid JWT present.
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
 
 
 
