@@ -186,7 +186,7 @@ def get_all_favoritos_one_usuario(usuario_id_fav):
 
 
 
-# Metodo para añadar un favorito
+# Metodo para añadir un favorito
 # {
 #     "personas_id": 1,
 #     "planetas_id": null,
@@ -274,7 +274,12 @@ def signup():
     info = Usuarios(nombre=name,apellido=last_name,nombre_de_usuario=username,contraseña=password, email=email,edad=edad,DNI=dni)
     db.session.add(info)
     db.session.commit()
-    return jsonify(request.json)
+
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token)
+
+
+    # return jsonify(request.json), 200
 
 # enviar a postman en el body
 #     {
@@ -315,12 +320,19 @@ def login():
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
-@app.route("/protected", methods=["GET"])
+@app.route("/valid-token", methods=["GET"])
 @jwt_required()
-def protected():
+def valid_token():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    consulta = Usuarios.query.filter_by(email=current_user).first()
+
+
+    if consulta is None :
+        return jsonify({"msg":"el usuario no existe", "estado":False}, 404)
+    
+
+    return jsonify({"estado":True}), 200
 
 
 
